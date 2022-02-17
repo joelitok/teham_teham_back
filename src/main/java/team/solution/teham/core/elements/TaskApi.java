@@ -11,7 +11,7 @@ import java.time.Duration;
 import org.json.JSONObject;
 import org.springframework.http.HttpMethod;
 
-public class TaskApi extends Task {
+public class TaskApi extends MultiTargetElement {
 
     private URI uri;
     
@@ -47,21 +47,21 @@ public class TaskApi extends Task {
         var requestBuilder = HttpRequest.newBuilder(uri).timeout(Duration.ofSeconds(30));
 
         if (data != null && (method == HttpMethod.POST || method == HttpMethod.PUT || method == HttpMethod.PATCH)) {
-            requestBuilder.headers("Content-Type", "application/json;charset=UTF-8");
+            requestBuilder.headers("Content-Type", "application/json");
             requestBuilder.method(method.name(), HttpRequest.BodyPublishers.ofString(data.toString()));
         } else {
             requestBuilder.method(method.name(), null);        
         }
 
         HttpRequest request = requestBuilder.build();
+        int statusCode = 0;
+        JSONObject json = null;
 
         try {
-            
             HttpResponse<String> response = HttpClient.newHttpClient().send(request, BodyHandlers.ofString());
-            int statusCode = response.statusCode();
-            if (statusCode >= 200 && statusCode < 300) {
-                return new JSONObject(response.body());
-            }
+            statusCode = response.statusCode();
+            String body = response.body();
+            json = (body != null) ? new JSONObject(body) : null;
         } catch (InterruptedException e) {
             e.printStackTrace();
             Thread.currentThread().interrupt();
@@ -69,7 +69,18 @@ public class TaskApi extends Task {
             e.printStackTrace();
         }
 
-        return null;
+        for (var t: targets) {
+            try {
+                if (Integer.parseInt(t.name) == statusCode) {
+                    this.target = t.id;
+                    break;
+                }
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return json;
     }
     
 }

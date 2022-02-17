@@ -13,6 +13,11 @@ public abstract class Element {
     protected String target;
 
     protected Element(String id, String name, String source, String target) {
+
+        if (id == null || name == null || source == null) {
+            throw new NullPointerException("id, name and source must not be null");
+        }
+
         this.id = id;
         this.name = name;
         this.source = source;

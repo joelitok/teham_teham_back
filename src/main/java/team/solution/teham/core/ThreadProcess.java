@@ -8,14 +8,16 @@ import java.util.Map;
 
 import org.json.JSONObject;
 
+import team.solution.teham.core.elements.MultiTargetElement;
+import team.solution.teham.core.exceptions.MalFormatedDocumentException;
 import team.solution.teham.core.exceptions.ProcessNotInitializedException;
 import team.solution.teham.core.utils.view.ViewEnventSnapshot;
 import team.solution.teham.core.utils.xml.XMLDoc;
 
 
-final class TehamProcess {
+public final class ThreadProcess {
 
-    private static TehamProcess instance;
+    private static ThreadProcess instance;
 
     private List<JSONObject> data;
 
@@ -25,17 +27,17 @@ final class TehamProcess {
 
     private XMLDoc xmlDoc;
 
-    private TehamProcess(XMLDoc xmlDoc) {
+    private ThreadProcess(XMLDoc xmlDoc) {
         this.xmlDoc = xmlDoc;
         data = new ArrayList<>();
         dataIterator = data.iterator();
         listeners = new HashMap<>();
     }
 
-    private static TehamProcess getInstance(XMLDoc xmlDoc) {
+    private static ThreadProcess getInstance(XMLDoc xmlDoc) {
         if (instance == null) {
             if (xmlDoc != null) {
-                instance = new TehamProcess(xmlDoc);
+                instance = new ThreadProcess(xmlDoc);
             } else {
                 throw new ProcessNotInitializedException(); 
             }
@@ -47,18 +49,27 @@ final class TehamProcess {
         getInstance(xmlDoc);
     }
 
-    public static TehamProcess getInstance() {
+    public static ThreadProcess getInstance() {
         return getInstance(null);
     }
 
 
     public void handle(String id) {
         var element = xmlDoc.getElementById(id);
+
+        if (element == null) {
+            throw new MalFormatedDocumentException("Element of id '" + id + "'' not found !");
+        }
+
         var json = element.handle(dataIterator.hasNext() ? dataIterator.next() : null);
         data.add(json);
         
         if (element.getTarget() != null) {
             handle(element.getTarget());
+        } else if (element instanceof MultiTargetElement) {    // multiple target
+            for (var tId: ((MultiTargetElement) element).getTargetsAsIds()) {
+                handle(tId);
+            }
         }
     }
 
