@@ -1,18 +1,26 @@
 package team.solution.teham.api.models;
 
-class ProcessInfo {
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
-    private final Integer pid;
+public class ProcessInfo {
 
-    private final Integer port;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
 
-    public ProcessInfo(int pid, int port) {
-        this.pid = pid;
+    private Long theadID;
+
+    private Integer port;
+
+    public ProcessInfo(long theadID, int port) {
+        this.theadID = theadID;
         this.port = port;
     }
 
-    public Integer getPid() {
-        return pid;
+    public Long getTheadID() {
+        return theadID;
     }
 
     public Integer getPort() {

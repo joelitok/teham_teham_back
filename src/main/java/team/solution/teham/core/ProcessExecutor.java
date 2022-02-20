@@ -15,9 +15,9 @@ import team.solution.teham.core.utils.view.ViewEnventSnapshot;
 import team.solution.teham.core.utils.xml.XMLDoc;
 
 
-public final class ThreadProcess {
+public final class ProcessExecutor {
 
-    private static ThreadProcess instance;
+    private static ProcessExecutor instance;
 
     private List<JSONObject> data;
 
@@ -27,17 +27,17 @@ public final class ThreadProcess {
 
     private XMLDoc xmlDoc;
 
-    private ThreadProcess(XMLDoc xmlDoc) {
+    private ProcessExecutor(XMLDoc xmlDoc) {
         this.xmlDoc = xmlDoc;
         data = new ArrayList<>();
         dataIterator = data.iterator();
         listeners = new HashMap<>();
     }
 
-    private static ThreadProcess getInstance(XMLDoc xmlDoc) {
+    private static ProcessExecutor getInstance(XMLDoc xmlDoc) {
         if (instance == null) {
             if (xmlDoc != null) {
-                instance = new ThreadProcess(xmlDoc);
+                instance = new ProcessExecutor(xmlDoc);
             } else {
                 throw new ProcessNotInitializedException(); 
             }
@@ -49,7 +49,7 @@ public final class ThreadProcess {
         getInstance(xmlDoc);
     }
 
-    public static ThreadProcess getInstance() {
+    public static ProcessExecutor getInstance() {
         return getInstance(null);
     }
 

@@ -2,7 +2,7 @@ package team.solution.teham.core.elements;
 
 import org.json.JSONObject;
 
-import team.solution.teham.core.ThreadProcess;
+import team.solution.teham.core.ProcessExecutor;
 
 public class TaskView extends MultiTargetElement {
 
@@ -15,7 +15,7 @@ public class TaskView extends MultiTargetElement {
 
         if (target == null) {
             for (var t: targets) {
-                ThreadProcess.getInstance().registerEventListener(t.name, t.id);
+                ProcessExecutor.getInstance().registerEventListener(t.name, t.id);
             }
         } 
 

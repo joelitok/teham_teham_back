@@ -2,7 +2,7 @@ package team.solution.teham.core.elements;
 
 import org.json.JSONObject;
 
-import team.solution.teham.core.ThreadProcess;
+import team.solution.teham.core.ProcessExecutor;
 
 enum EventType { 
     START,
@@ -37,7 +37,7 @@ public class Event extends Element {
         }
 
         if (type == EventType.VIEW) {
-            ThreadProcess.getInstance().registerEventListener(name, target);
+            ProcessExecutor.getInstance().registerEventListener(name, target);
             target = null;
         }
 
