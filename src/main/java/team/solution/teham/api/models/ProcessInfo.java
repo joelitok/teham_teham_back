@@ -18,6 +18,23 @@ public class ProcessInfo {
         this.theadID = theadID;
         this.port = port;
     }
+ 
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setTheadID(Long theadID) {
+        this.theadID = theadID;
+    }
+
+    public void setPort(Integer port) {
+        this.port = port;
+    }
+
+    public Long getId() {
+        return id;
+    }
 
     public Long getTheadID() {
         return theadID;

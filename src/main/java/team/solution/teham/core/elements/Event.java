@@ -26,7 +26,7 @@ public class Event extends Element {
     }
 
     @Override
-    public JSONObject handle(JSONObject data) {
+    public JSONObject handle(ProcessExecutor processExecutor, JSONObject data) {
         if (type == EventType.START) {
             return null;
         }
@@ -37,7 +37,7 @@ public class Event extends Element {
         }
 
         if (type == EventType.VIEW) {
-            ProcessExecutor.getInstance().registerEventListener(name, target);
+            processExecutor.registerEventListener(name, target);
             target = null;
         }
 

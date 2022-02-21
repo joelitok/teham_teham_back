@@ -2,7 +2,7 @@ package team.solution.teham.core.utils.view;
 
 import org.json.JSONObject;
 
-public class ViewEnventSnapshotJSONImpl implements ViewEnventSnapshot {
+public class ViewData {
 
     private final String name;
 
@@ -11,30 +11,44 @@ public class ViewEnventSnapshotJSONImpl implements ViewEnventSnapshot {
     private static final String KEY_NAME = "name";
     private static final String KEY_DATA = "data";
 
-    public ViewEnventSnapshotJSONImpl(JSONObject json) {
+    public ViewData(JSONObject json) {
         if (json.has(KEY_NAME)) {
             this.name = json.getString(KEY_NAME);
             this.data = json.has(KEY_DATA) ? json.getJSONObject(KEY_DATA) : null;
         } else {
-            throw new BadViewSnapshotJsonStructureException();
+            throw new BadViewDataJsonStructureException();
         }
     }
 
-    @Override
+    public ViewData(String name, JSONObject data) {
+        this.name = name;
+        this.data = data;
+    }
+
+    
+    public JSONObject toJSON() {
+        var json = new JSONObject();
+        json.put(KEY_NAME, name);
+        json.put(KEY_DATA, data);
+        return json;
+    }
+
     public String getName() {
         return name;
     }
 
-    @Override
     public JSONObject getData() {
         return data;
     }
     
+    public String toString() {
+        return toJSON().toString();
+    }
     
-    class BadViewSnapshotJsonStructureException extends RuntimeException {
+    class BadViewDataJsonStructureException extends RuntimeException {
         @Override
         public String getMessage() {
-            return "The json view event data must contains mandatory 'name' key and optional 'data' key";
+            return "The json view data must contains mandatory 'name' key and optional 'data' key";
         }
     }
 }

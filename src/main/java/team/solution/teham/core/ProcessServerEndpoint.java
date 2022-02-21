@@ -1,8 +1,6 @@
 package team.solution.teham.core;
 
 import java.io.IOException;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import javax.websocket.CloseReason;
@@ -12,37 +10,25 @@ import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.CloseReason.CloseCodes;
-import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 
-import team.solution.teham.core.utils.view.ViewEnventSnapshotJSONImpl;
-
-@ServerEndpoint(value = "/teham/{key}")
+@ServerEndpoint(value = "/teham")
 public class ProcessServerEndpoint {
     
-    Map<String, Session> sessions = new ConcurrentHashMap<>();
-
     private Logger logger = Logger.getLogger(this.getClass().getName());
 
     @OnOpen
-    public void onOpen(Session session, @PathParam("key") String key) {
+    public void onOpen(Session session) {
         logger.info(String.format("Session '%s' Connected", session.getId()));
-        sessions.put(session.getId(), session);
+        new ProcessExecutor(session).start();
     }
 
     @OnMessage
     public void onMessage(String message, Session session) throws IOException {
         logger.info(String.format("Session '%s' new message: %s", session.getId(), message));
-        try {
-            var json = new JSONObject(message);
-            ProcessExecutor.getInstance().onEvent(new ViewEnventSnapshotJSONImpl(json));
-        } catch (JSONException e) {
-            if (message != null && (message.equalsIgnoreCase("q") || message.equalsIgnoreCase("exit"))) {
-                session.close(new CloseReason(CloseCodes.NORMAL_CLOSURE, "quit message received"));
-            }
+        if (message != null && (message.equalsIgnoreCase("q") || message.equalsIgnoreCase("exit"))) {
+            session.close(new CloseReason(CloseCodes.NORMAL_CLOSURE, "quit message received"));
         }
     }
 
@@ -53,12 +39,7 @@ public class ProcessServerEndpoint {
 
     @OnError
     public void onError(Session session, Throwable throwable) {
-        // Do error handling here
+        throwable.printStackTrace();
     }
 
-    public void sendMessage() throws IOException {
-        sessions.get("")
-            .getBasicRemote() // see also getAsyncRemote()
-            .sendText("Message you want to send");
-    }
 }

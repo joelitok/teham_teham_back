@@ -2,6 +2,8 @@ package team.solution.teham.core.elements;
 
 import org.json.JSONObject;
 
+import team.solution.teham.core.ProcessExecutor;
+
 public abstract class Element {
     
     protected final String id;
@@ -40,6 +42,6 @@ public abstract class Element {
         return name;
     }
 
-    public abstract JSONObject handle(JSONObject data);
+    public abstract JSONObject handle(ProcessExecutor processExecutor, JSONObject data);
 
 }

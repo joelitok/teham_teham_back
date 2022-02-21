@@ -11,6 +11,8 @@ import java.time.Duration;
 import org.json.JSONObject;
 import org.springframework.http.HttpMethod;
 
+import team.solution.teham.core.ProcessExecutor;
+
 public class TaskApi extends MultiTargetElement {
 
     private URI uri;
@@ -43,7 +45,7 @@ public class TaskApi extends MultiTargetElement {
     }
 
     @Override
-    public JSONObject handle(JSONObject data) {
+    public JSONObject handle(ProcessExecutor processExecutor, JSONObject data) {
         var requestBuilder = HttpRequest.newBuilder(uri).timeout(Duration.ofSeconds(30));
 
         if (data != null && (method == HttpMethod.POST || method == HttpMethod.PUT || method == HttpMethod.PATCH)) {

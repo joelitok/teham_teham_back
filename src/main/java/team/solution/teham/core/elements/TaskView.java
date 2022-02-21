@@ -3,6 +3,7 @@ package team.solution.teham.core.elements;
 import org.json.JSONObject;
 
 import team.solution.teham.core.ProcessExecutor;
+import team.solution.teham.core.utils.view.ViewData;
 
 public class TaskView extends MultiTargetElement {
 
@@ -11,22 +12,17 @@ public class TaskView extends MultiTargetElement {
     }
 
     @Override
-    public JSONObject handle(JSONObject data) {
+    public JSONObject handle(ProcessExecutor processExecutor, JSONObject data) {
 
         if (target == null) {
             for (var t: targets) {
-                ProcessExecutor.getInstance().registerEventListener(t.name, t.id);
+                processExecutor.registerEventListener(t.name, t.id);
             }
         } 
 
-        sendDisplayViewMessage(data);
+        processExecutor.sendViewData(new ViewData(name, data));
 
         return null;
-    }
-
-
-    private void sendDisplayViewMessage(JSONObject data) {
-        // sendViewName(this.name, JSONObject data);
     }
 
 }

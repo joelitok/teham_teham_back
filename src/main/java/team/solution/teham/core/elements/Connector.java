@@ -2,6 +2,8 @@ package team.solution.teham.core.elements;
 
 import org.json.JSONObject;
 
+import team.solution.teham.core.ProcessExecutor;
+
 public class Connector extends Element {
 
     public Connector(String id, String name, String source, String target) {
@@ -9,7 +11,7 @@ public class Connector extends Element {
     }
 
     @Override
-    public JSONObject handle(JSONObject data) {
+    public JSONObject handle(ProcessExecutor processExecutor, JSONObject data) {
         return data;
     }
     
