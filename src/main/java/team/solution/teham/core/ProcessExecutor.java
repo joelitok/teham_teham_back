@@ -60,7 +60,7 @@ public final class ProcessExecutor {
     }
 
     public void start() {
-        handle("0");
+        handle(xmlDoc.getStartEventElement().getId());
     }
 
     private void handle(String id) {

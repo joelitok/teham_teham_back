@@ -44,6 +44,26 @@ public class DocParserXMLDocImpl implements XMLDoc {
     }
 
     @Override
+    public Event getStartEventElement() {
+        try {
+            var node = (Element) root.getFirstChild();
+            while (node != null) {
+                if (node.hasAttribute("type") && "Start".equalsIgnoreCase(node.getAttribute("type"))) {
+                    var createdE = createTehamElementFromNode(node);
+                    if (createdE instanceof Event) {
+                        return (Event) createdE;
+                    } 
+                }
+                node = (Element) node.getNextSibling();
+            }
+        } catch (NullPointerException e) {
+            throw new MalFormatedDocumentException(e);
+        }
+
+        return null;
+    }
+
+    @Override
     public team.solution.teham.core.elements.Element getElementById(String id) {
         try {
             var node = (Element) root.getFirstChild();

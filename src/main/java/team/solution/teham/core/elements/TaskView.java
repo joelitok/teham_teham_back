@@ -14,12 +14,6 @@ public class TaskView extends MultiTargetElement {
     @Override
     public JSONObject handle(ProcessExecutor processExecutor, JSONObject data) {
 
-        if (target == null) {
-            for (var t: targets) {
-                processExecutor.registerEventListener(t.name, t.id);
-            }
-        } 
-
         processExecutor.sendViewData(new ViewData(name, data));
 
         return null;
