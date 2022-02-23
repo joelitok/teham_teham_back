@@ -6,6 +6,7 @@ import org.xml.sax.SAXException;
 
 import team.solution.teham.core.elements.Connector;
 import team.solution.teham.core.elements.Event;
+import team.solution.teham.core.elements.Gateway;
 import team.solution.teham.core.elements.MultiTargetElement;
 import team.solution.teham.core.elements.TaskApi;
 import team.solution.teham.core.elements.TaskView;
@@ -100,11 +101,15 @@ public class DocParserXMLDocImpl implements XMLDoc {
         var type = node.getAttribute("type");
         var tag = node.getNodeName();
 
-        if (tag.equalsIgnoreCase("Connector")) {
+        if (tag.equalsIgnoreCase(Connector.class.getSimpleName())) {
             return new Connector(attrId, attrName, attrSource, attrTarget);
         }
 
-        if (tag.equalsIgnoreCase("Event")) {            
+        if (tag.equalsIgnoreCase(Gateway.class.getSimpleName())) {
+            return new Gateway(attrId, attrName, attrSource, attrTarget);
+        }
+
+        if (tag.equalsIgnoreCase(Event.class.getSimpleName())) {            
             return new Event(attrId, attrName, attrSource, attrTarget, type);
         }
 

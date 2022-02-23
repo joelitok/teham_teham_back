@@ -13,7 +13,7 @@ import org.springframework.http.HttpMethod;
 
 import team.solution.teham.core.ProcessExecutor;
 
-public class TaskApi extends MultiTargetElement {
+public class TaskApi extends Element {
 
     private URI uri;
     
@@ -56,30 +56,18 @@ public class TaskApi extends MultiTargetElement {
         }
 
         HttpRequest request = requestBuilder.build();
-        int statusCode = 0;
-        JSONObject json = null;
+        JSONObject json = new JSONObject();
 
         try {
             HttpResponse<String> response = HttpClient.newHttpClient().send(request, BodyHandlers.ofString());
-            statusCode = response.statusCode();
             String body = response.body();
-            json = (body != null) ? new JSONObject(body) : null;
+            json.put("status", response.statusCode())
+                .put("body", (body != null) ? new JSONObject(body) : null);
         } catch (InterruptedException e) {
             e.printStackTrace();
             Thread.currentThread().interrupt();
         } catch (IOException e) {
             e.printStackTrace();
-        }
-
-        for (var t: targets) {
-            try {
-                if (Integer.parseInt(t.name) == statusCode) {
-                    this.target = t.id;
-                    break;
-                }
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
-            }
         }
 
         return json;
