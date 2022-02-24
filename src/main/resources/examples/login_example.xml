@@ -15,7 +15,7 @@
     <Connector id="12" name="connector6" source="8" target="13" />
     <Task id="13" name="get-profil-data" source="12" target="14" type="api" uri="/user" method="GET" />
     <Connector id="14" name="connector7" source="13" target="15" />
-    <Task id="15" name="dashboard" events="onLogout,onClose" target="16,20" source="14" type="view" />
+    <Task id="15" name="dashboard" target="16,20" source="14" type="view" />
 
     <Event id="16" name="onLogout" source="14" target="17" type="view" />
     <Connector id="17" name="connector8" source="16" target="18" />

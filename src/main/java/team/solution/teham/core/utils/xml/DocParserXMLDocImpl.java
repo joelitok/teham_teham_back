@@ -87,7 +87,6 @@ public class DocParserXMLDocImpl implements XMLDoc {
         var sources = toArr(node.getAttribute("source"));
         var targets = toArr(node.getAttribute("target"));
         var cases = toArr(node.getAttribute("cases"));
-        var events = toArr(node.getAttribute("events"));
         var type = node.getAttribute("type");
         var tag = node.getNodeName();
 
@@ -115,7 +114,7 @@ public class DocParserXMLDocImpl implements XMLDoc {
                     HttpMethod.resolve(node.getAttribute("method"))
                 );
             } else {    // it is a view task
-                return new TaskView(attrId, attrName, sources, targets, events);
+                return new TaskView(attrId, attrName, sources, targets);
             }
         }
 
