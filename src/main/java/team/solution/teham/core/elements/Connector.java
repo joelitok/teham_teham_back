@@ -6,8 +6,9 @@ import team.solution.teham.core.ProcessExecutor;
 
 public class Connector extends Element {
 
-    public Connector(String id, String name, String source, String target) {
-        super(id, name, source, target);
+    public Connector(String id, String name, String[] sources, String[] targets) {
+        super(id, name, sources, targets);
+        assertExactTargetCount(1);
     }
 
     @Override

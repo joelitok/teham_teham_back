@@ -22,8 +22,8 @@ public class TaskApi extends Element {
     public TaskApi(
         String id, 
         String name, 
-        String source, 
-        String target,
+        String[] source, 
+        String[] target,
 
         URI uri,
         HttpMethod method
@@ -31,13 +31,14 @@ public class TaskApi extends Element {
         super(id, name, source, target);
         this.uri = uri;
         this.method = method != null ? method : HttpMethod.GET;
+        assertExactTargetCount(1);
     }
 
     public TaskApi(
         String id, 
         String name, 
-        String source, 
-        String target,
+        String[] source, 
+        String[] target,
 
         URI uri
     ) {

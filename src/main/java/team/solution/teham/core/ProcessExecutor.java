@@ -16,7 +16,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.xml.sax.SAXException;
 
-import team.solution.teham.core.elements.MultiTargetElement;
 import team.solution.teham.core.exceptions.MalFormatedDocumentException;
 import team.solution.teham.core.utils.view.ViewData;
 import team.solution.teham.core.utils.xml.DocParserXMLDocImpl;
@@ -74,11 +73,9 @@ public final class ProcessExecutor {
             var json = element.handle(this, dataIterator.hasNext() ? dataIterator.next() : null);
             data.add(json);
             
-            if (element.getTarget() != null) {
-                handle(element.getTarget());
-            } else if (element instanceof MultiTargetElement) {    // multiple target
-                for (var tId: ((MultiTargetElement) element).getTargetsAsIds()) {
-                    handle(tId);
+            if ( element.hasNext()) {
+                for (var target: element.getNexts()) {
+                    handle(target);
                 }
             }
         }

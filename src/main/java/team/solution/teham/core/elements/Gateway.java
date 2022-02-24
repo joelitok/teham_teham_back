@@ -1,13 +1,21 @@
 package team.solution.teham.core.elements;
 
+import java.util.List;
+
 import org.json.JSONObject;
 
 import team.solution.teham.core.ProcessExecutor;
 
-public class Gateway extends MultiTargetElement {
+public class Gateway extends Element {
 
-    public Gateway(String id, String name, String source, String target) {
-        super(id, name, source, target);
+    private final List<String> cases;
+
+    private String next;
+
+    public Gateway(String id, String name, String[] sources, String[] targets, String[] cases) {
+        super(id, name, sources, targets);
+        this.cases = List.of(cases);
+        assertExactTargetCount(cases.length);
     }
 
     @Override
@@ -15,10 +23,10 @@ public class Gateway extends MultiTargetElement {
         if (data != null) {
             int statusCode = data.has("status") ? data.getInt("status") : 0;
             JSONObject body = data.has("body") ? data.getJSONObject("body") : null;
-            for (var t: targets) {
+            for (int i = 0; i < cases.size(); i++) {
                 try {
-                    if (Integer.parseInt(t.name) == statusCode) {
-                        this.target = t.id;
+                    if (Integer.parseInt(cases.get(i)) == statusCode) {
+                        this.next = targets.get(i);
                         break;
                     }
                 } catch (NumberFormatException e) {
@@ -30,4 +38,8 @@ public class Gateway extends MultiTargetElement {
         return null;
     }
     
+    @Override
+    public String[] getNexts() {
+        return new String[]{next};
+    }
 }

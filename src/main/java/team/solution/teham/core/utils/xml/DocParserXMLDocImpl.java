@@ -7,7 +7,6 @@ import org.xml.sax.SAXException;
 import team.solution.teham.core.elements.Connector;
 import team.solution.teham.core.elements.Event;
 import team.solution.teham.core.elements.Gateway;
-import team.solution.teham.core.elements.MultiTargetElement;
 import team.solution.teham.core.elements.TaskApi;
 import team.solution.teham.core.elements.TaskView;
 import team.solution.teham.core.exceptions.MalFormatedDocumentException;
@@ -70,18 +69,7 @@ public class DocParserXMLDocImpl implements XMLDoc {
             var node = (Element) root.getFirstChild();
             while (node != null) {
                 if (id.equalsIgnoreCase(node.getAttribute("id"))) {
-                    var createdE = createTehamElementFromNode(node);
-                    if (node.hasChildNodes() && createdE instanceof MultiTargetElement) {
-                        var childs = node.getChildNodes();
-                        for (int i=0, l = childs.getLength(); i < l; i++) {
-                            var target = (Element) childs.item(i);
-                            ((MultiTargetElement) createdE).addTarget(
-                                target.getAttribute("id"),
-                                target.getAttribute("name")
-                            );
-                        }
-                    } 
-                    return createdE;
+                    return createTehamElementFromNode(node);
                 }
                 node = (Element) node.getNextSibling();
             }
@@ -96,21 +84,23 @@ public class DocParserXMLDocImpl implements XMLDoc {
     private team.solution.teham.core.elements.Element createTehamElementFromNode(Element node) {
         var attrId = node.getAttribute("id");
         var attrName = node.getAttribute("name");
-        var attrSource = node.getAttribute("source");
-        var attrTarget = node.getAttribute("target");
+        var sources = toArr(node.getAttribute("source"));
+        var targets = toArr(node.getAttribute("target"));
+        var cases = toArr(node.getAttribute("cases"));
+        var events = toArr(node.getAttribute("events"));
         var type = node.getAttribute("type");
         var tag = node.getNodeName();
 
         if (tag.equalsIgnoreCase(Connector.class.getSimpleName())) {
-            return new Connector(attrId, attrName, attrSource, attrTarget);
+            return new Connector(attrId, attrName, sources, targets);
         }
 
         if (tag.equalsIgnoreCase(Gateway.class.getSimpleName())) {
-            return new Gateway(attrId, attrName, attrSource, attrTarget);
+            return new Gateway(attrId, attrName, sources, targets, cases);
         }
 
         if (tag.equalsIgnoreCase(Event.class.getSimpleName())) {            
-            return new Event(attrId, attrName, attrSource, attrTarget, type);
+            return new Event(attrId, attrName, sources, targets, type);
         }
 
         if (tag.equalsIgnoreCase("Task")) {
@@ -118,18 +108,25 @@ public class DocParserXMLDocImpl implements XMLDoc {
                 return new TaskApi(
                     attrId, 
                     attrName, 
-                    attrSource, 
-                    attrTarget, 
+                    sources, 
+                    targets, 
                     
                     URI.create(node.getAttribute("uri")),
                     HttpMethod.resolve(node.getAttribute("method"))
                 );
             } else {    // it is a view task
-                return new TaskView(attrId, attrName, attrSource, attrTarget);
+                return new TaskView(attrId, attrName, sources, targets, events);
             }
         }
 
         return null;
+    }
+
+    private String[] toArr(String str) {
+        if (str != null) {
+            return str.contains(",") ? str.split(",") : new String[] {str};
+        }
+        return new String[] {};
     }
 
 }
