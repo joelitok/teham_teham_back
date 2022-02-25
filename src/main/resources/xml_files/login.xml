@@ -5,7 +5,7 @@
     <Connector id="4" name="connector2" source="3" target="5" />
     <Event id="5" name="onSubmit" source="4" target="6" type="view" />
     <Connector id="6" name="connector3" source="5" target="7" />
-    <Task id="7" name="post-login" source="6" target="8" type="api" uri="/login" method="POST">
+    <Task id="7" name="post-login" source="6" target="8" type="api" uri="/login" method="POST" />
     <Gateway id="8" name="after-login" cases="401,200" target="9,12" source="7" />
     
     <Connector id="9" name="connector4" source="8" target="10" />
@@ -19,7 +19,7 @@
 
     <Event id="16" name="onLogout" source="14" target="17" type="view" />
     <Connector id="17" name="connector8" source="16" target="18" />
-    <Task id="18" name="logout" source="17" target="19" type="api" uri="/logout" method="DELETE">
+    <Task id="18" name="logout" source="17" target="19" type="api" uri="/logout" method="DELETE" />
     <Connector id="19" name="connector9" source="18" target="3" />
 
     <Event id="20" source="15" name="End program" type="End" />

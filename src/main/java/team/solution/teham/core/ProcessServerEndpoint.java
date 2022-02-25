@@ -13,7 +13,7 @@ import javax.websocket.CloseReason.CloseCodes;
 import javax.websocket.server.ServerEndpoint;
 
 
-@ServerEndpoint(value = "/teham")
+@ServerEndpoint(value = "/")
 public class ProcessServerEndpoint {
     
     private Logger logger = Logger.getLogger(this.getClass().getName());
@@ -43,3 +43,4 @@ public class ProcessServerEndpoint {
     }
 
 }
+

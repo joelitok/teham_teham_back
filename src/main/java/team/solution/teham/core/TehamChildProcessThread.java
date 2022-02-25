@@ -1,12 +1,10 @@
 package team.solution.teham.core;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.websocket.DeploymentException;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.glassfish.tyrus.server.Server;
@@ -17,35 +15,49 @@ public class TehamChildProcessThread extends Thread {
     private Server server;
     private Logger logger = Logger.getLogger(this.getClass().getName());
 
-    public TehamChildProcessThread(int port, InputStream xmlFileIS) throws ParserConfigurationException, SAXException, IOException {
+    public TehamChildProcessThread(String host, int port, String topic, InputStream xmlFileIS) throws ParserConfigurationException, SAXException, IOException {
         ProcessExecutor.initialize(xmlFileIS);
-        this.server = new Server("localhost", port, "/", ProcessServerEndpoint.class);
+        this.server = new Server(host, port, topic, ProcessServerEndpoint.class);
+    }
+
+    public void test() throws FailedToStartException {
+        try {
+            server.start();
+            server.stop();
+        } catch (Exception e) {
+            throw new FailedToStartException(e);
+        }
     }
 
     public synchronized void stopServer() {
         if (server != null) {
             server.stop();
-            server = null;
             logger.info("Websocket Server stopped.");
+            throw new ServerStoppedException();
         }
     }
 
     @Override
     public void run() {
-        try (
-            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        ) {
+        try {
             server.start();
-            logger.info("Please press a key to stop the server.");
-            var s = reader.readLine();
-            logger.log(Level.INFO, "User hint: {0} ", s);
-        } catch (Exception e) {
+        } catch (DeploymentException e) {
             e.printStackTrace();
-            logger.severe("The server failed to start");
-        } finally {
             stopServer();
+            throw new FailedToStartException("The server failed to start", e);
+        }
+    }
+
+    public class ServerStoppedException extends RuntimeException {}
+
+    public class FailedToStartException extends RuntimeException {
+        
+        FailedToStartException(Throwable e) {
+            super(e);
         }
 
+        FailedToStartException(String message, Throwable e) {
+            super(message, e);
+        }
     }
-    
 }
