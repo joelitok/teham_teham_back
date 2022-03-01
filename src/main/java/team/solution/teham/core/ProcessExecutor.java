@@ -4,12 +4,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
+import javax.websocket.CloseReason;
 import javax.websocket.MessageHandler;
 import javax.websocket.Session;
+import javax.websocket.CloseReason.CloseCodes;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.json.JSONException;
@@ -24,15 +26,13 @@ import team.solution.teham.core.utils.xml.XMLDoc;
 
 public final class ProcessExecutor {
 
-    private List<JSONObject> data;
-
-    private Iterator<JSONObject> dataIterator;
-
     private Map<String, List<String>> listeners;
 
     private Session webSocketSession;
 
     private static XMLDoc xmlDoc;
+
+    private Logger logger = Logger.getLogger(this.getClass().getName());
 
     public ProcessExecutor(Session webSocketSession) {
 
@@ -41,15 +41,22 @@ public final class ProcessExecutor {
         }
 
         this.webSocketSession = webSocketSession;
-        data = new ArrayList<>();
-        dataIterator = data.iterator();
         listeners = new HashMap<>();
-        webSocketSession.addMessageHandler((MessageHandler.Whole<String>) message -> {
-            try {
-                var json = new JSONObject(message);
-                onEvent(new ViewData(json));
-            } catch (JSONException e) {
-                e.printStackTrace();
+        webSocketSession.addMessageHandler(new MessageHandler.Whole<String>() {
+            @Override
+            public void onMessage(String message) {
+                try {
+                    logger.info(String.format("Session '%s' new message: %s", webSocketSession.getId(), message));
+                    if (message != null && (message.equalsIgnoreCase("q") || message.equalsIgnoreCase("exit"))) {
+                        webSocketSession.close(new CloseReason(CloseCodes.NORMAL_CLOSURE, "quit message received"));
+                    }
+                    var json = new JSONObject(message);
+                    onEvent(new ViewData(json));
+                } catch (IOException e) {
+                    // e.printStackTrace();
+                } catch (JSONException e2) {
+                    // e2.printStackTrace();
+                }
             }
         });
     }
@@ -59,10 +66,10 @@ public final class ProcessExecutor {
     }
 
     public void start() {
-        handle(xmlDoc.getStartEventElement().getId());
+        handle(xmlDoc.getStartEventElement().getId(), null);
     }
 
-    private void handle(String id) {
+    private void handle(String id, JSONObject data) {
         if (webSocketSession.isOpen()) {
             var element = xmlDoc.getElementById(id);
 
@@ -70,12 +77,11 @@ public final class ProcessExecutor {
                 throw new MalFormatedDocumentException("Element of id '" + id + "'' not found !");
             }
 
-            var json = element.handle(this, dataIterator.hasNext() ? dataIterator.next() : null);
-            data.add(json);
+            var json = element.handle(this, data);
             
-            if ( element.hasNext()) {
+            if (element.hasNext()) {
                 for (var target: element.getNexts()) {
-                    handle(target);
+                    handle(target, json);
                 }
             }
         }
@@ -98,8 +104,7 @@ public final class ProcessExecutor {
         if (listeners.containsKey(eventName)) {
             var ids = listeners.get(eventName);
             for (var id: ids) {
-                data.add(event.getData());
-                handle(id);
+                handle(id, event.getData());
             }
         }
     }

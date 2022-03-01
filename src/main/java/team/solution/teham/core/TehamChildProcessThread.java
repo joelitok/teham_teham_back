@@ -41,6 +41,9 @@ public class TehamChildProcessThread extends Thread {
     public void run() {
         try {
             server.start();
+            logger.info("AAA");
+            System.console().readLine();
+            logger.info("BBB");
         } catch (DeploymentException e) {
             e.printStackTrace();
             stopServer();

@@ -27,6 +27,12 @@ public abstract class Element {
         this.name = name;
         this.sources = List.of(sources);
         this.targets = targets != null ? Arrays.asList(targets) : null;
+
+        System.out.println("\n\n========= CREATING: " + this.getClass().getSimpleName() + " =========");
+        System.out.println("ID     : " + id);
+        System.out.println("NAME   : " + name);
+        System.out.println("SOURCES: " + Arrays.toString(sources));
+        System.out.println("TARGETS: " + Arrays.toString(targets));
     }
 
     public String getId() {
@@ -68,8 +74,8 @@ public abstract class Element {
 
         if (
             (sign == 0 && targets.size() != count) || 
-            (sign < 0 && targets.size() <= count) ||
-            (sign > 0 && targets.size() >= count)
+            (sign < 0 && targets.size() > count) ||
+            (sign > 0 && targets.size() < count)
         ) {
             throw new IllegalArgumentException("Invalid targets count for element " + getClass().getSimpleName());
         }

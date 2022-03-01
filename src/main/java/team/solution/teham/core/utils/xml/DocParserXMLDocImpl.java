@@ -46,15 +46,18 @@ public class DocParserXMLDocImpl implements XMLDoc {
     @Override
     public Event getStartEventElement() {
         try {
-            var node = (Element) root.getFirstChild();
+            var node = root.getFirstChild();
             while (node != null) {
-                if (node.hasAttribute("type") && "Start".equalsIgnoreCase(node.getAttribute("type"))) {
-                    var createdE = createTehamElementFromNode(node);
-                    if (createdE instanceof Event) {
-                        return (Event) createdE;
-                    } 
+                if (node instanceof Element) {
+                    var elt = (Element) node;
+                    if (elt.hasAttribute("type") && "Start".equalsIgnoreCase(elt.getAttribute("type"))) {
+                        var createdE = createTehamElement(elt);
+                        if (createdE instanceof Event) {
+                            return (Event) createdE;
+                        } 
+                    }
                 }
-                node = (Element) node.getNextSibling();
+                node = node.getNextSibling();
             }
         } catch (NullPointerException e) {
             throw new MalFormatedDocumentException(e);
@@ -66,12 +69,15 @@ public class DocParserXMLDocImpl implements XMLDoc {
     @Override
     public team.solution.teham.core.elements.Element getElementById(String id) {
         try {
-            var node = (Element) root.getFirstChild();
+            var node = root.getFirstChild();
             while (node != null) {
-                if (id.equalsIgnoreCase(node.getAttribute("id"))) {
-                    return createTehamElementFromNode(node);
+                if (node instanceof Element) {
+                    var elt = (Element) node;
+                    if (id.equalsIgnoreCase(elt.getAttribute("id"))) {
+                        return createTehamElement(elt);
+                    }
                 }
-                node = (Element) node.getNextSibling();
+                node = node.getNextSibling();
             }
         } catch (NullPointerException e) {
             throw new MalFormatedDocumentException(e);
@@ -81,7 +87,7 @@ public class DocParserXMLDocImpl implements XMLDoc {
     }
 
 
-    private team.solution.teham.core.elements.Element createTehamElementFromNode(Element node) {
+    private team.solution.teham.core.elements.Element createTehamElement(Element node) {
         var attrId = node.getAttribute("id");
         var attrName = node.getAttribute("name");
         var sources = toArr(node.getAttribute("source"));
