@@ -4,8 +4,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Logger;
 
 import javax.websocket.CloseReason;
@@ -26,7 +31,7 @@ import team.solution.teham.core.utils.xml.XMLDoc;
 
 public final class ProcessExecutor {
 
-    private Map<String, List<String>> listeners;
+    private ConcurrentMap<String, Set<String>> listeners;
 
     private Session webSocketSession;
 
@@ -41,7 +46,7 @@ public final class ProcessExecutor {
         }
 
         this.webSocketSession = webSocketSession;
-        listeners = new HashMap<>();
+        listeners = new ConcurrentHashMap<>();
         webSocketSession.addMessageHandler(new MessageHandler.Whole<String>() {
             @Override
             public void onMessage(String message) {
@@ -53,9 +58,9 @@ public final class ProcessExecutor {
                     var json = new JSONObject(message);
                     onEvent(new ViewData(json));
                 } catch (IOException e) {
-                    // e.printStackTrace();
+                    e.printStackTrace();
                 } catch (JSONException e2) {
-                    // e2.printStackTrace();
+                    e2.printStackTrace();
                 }
             }
         });
@@ -77,7 +82,11 @@ public final class ProcessExecutor {
                 throw new MalFormatedDocumentException("Element of id '" + id + "'' not found !");
             }
 
+            logger.info("****** ABOUT TO HANDLE " + element.getName());
+
             var json = element.handle(this, data);
+
+            logger.info("****** HANLDING " + element.getName() + " FINISHED WITH DATA: " + (json != null ? json.toString() : null));
             
             if (element.hasNext()) {
                 for (var target: element.getNexts()) {
@@ -89,11 +98,11 @@ public final class ProcessExecutor {
 
     public void registerEventListener(String eventName, String id) {
         if (listeners.containsKey(eventName)) {
-            var list = listeners.get(eventName);
+            var list = new HashSet<>(listeners.get(eventName));
             list.add(id);
             listeners.replace(eventName, list);
         } else {
-            var list = new ArrayList<String>();
+            var list = new HashSet<String>();
             list.add(id);
             listeners.put(eventName, list);
         }
