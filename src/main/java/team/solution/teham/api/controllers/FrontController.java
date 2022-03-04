@@ -45,12 +45,11 @@ public class FrontController {
             var requestURL = new URL(request.getRequestURL().toString());
             var host = requestURL.getHost();
 
-            var topic = "/";
+            var topic = "/" + port;
             var t = new TehamChildProcessThread(host, port, topic, new FileInputStream(file));
         
-            // t.test();
+            t.test();
 
-            
             var url = String.format("ws://%s:%s", host, port);
 
             var created = processInfoRepository.save(new ProcessInfo(t.getId(), url, host, port, topic));

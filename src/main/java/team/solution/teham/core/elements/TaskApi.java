@@ -52,8 +52,23 @@ public class TaskApi extends Element {
     @Override
     public JSONObject handle(ProcessExecutor processExecutor, JSONObject data) {
         logger.info("Inside API task");
-        var requestBuilder = HttpRequest.newBuilder(uri).timeout(Duration.ofSeconds(30));
-
+        
+        // parsing path param url
+        var uriStr = uri.toString();
+        var map = data.toMap();
+        for (var entry : map.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            if (value instanceof String) {
+                var keyParam = "{" + key + "}";
+                if (uriStr.contains(keyParam)) {
+                    uriStr = uriStr.replace(keyParam, value.toString());
+                }
+            }
+        }
+        
+        var requestBuilder = HttpRequest.newBuilder(URI.create(uriStr)).timeout(Duration.ofSeconds(30));
+        
         if (data != null && (method == HttpMethod.POST || method == HttpMethod.PUT || method == HttpMethod.PATCH)) {
             requestBuilder.headers("Content-Type", "application/json");
             requestBuilder.method(method.name(), HttpRequest.BodyPublishers.ofString(data.toString()));

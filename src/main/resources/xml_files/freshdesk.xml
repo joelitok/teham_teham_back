@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<Process id="0" target="1" type="process" name="process_start" source="localhost"> 
+
+    <event id="1" target="2" source="0" type="Start" name="Start Event" />
+
+    <connector id="2" target="3" source="1" type="connector" name="connecteur_1" />
+
+    <task id="3" target="4" source="2" name="1A" type="api" method="GET" uri="http://localhost:8081/tickets" />
+
+    <connector id="4" target="5" source="4" type="connector" name="connecteur_2" />
+
+    <task id="5" target="6" source="4" name="/tickets" type="view" />
+
+    <event id="6" target="7" source="4" type="view" name="onClick" />
+
+    <connector id="7" target="8" source="6" type="connector" name="connecteur_3" />
+
+    <task id="8" target="9" source="7" name="3A" type="api" method="GET" uri="http://localhost:8082/search/{name}" />
+
+    <connector id="9" target="10" source="8" type="connector" name="connecteur_4" />
+
+    <task id="10" target="11" source="9" name="/monitoring" type="view" />
+
+    <event id="11" target="12" source="10" type="view" name="onClick" />
+
+    <connector id="12" target="13" source="11" type="connector" name="connecteur_5" />
+
+    <task id="13" target="14" source="12" name="5a" type="api" method="GET" uri="http://not-implemented.com" />
+
+    <event id="14" source="13" type="end" name="End_Event" />
+
+</Process>
