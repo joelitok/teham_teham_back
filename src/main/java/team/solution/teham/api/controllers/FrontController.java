@@ -45,7 +45,7 @@ public class FrontController {
             var requestURL = new URL(request.getRequestURL().toString());
             var host = requestURL.getHost();
 
-            var topic = "/" + port;
+            var topic = "/";
             var t = new TehamChildProcessThread(host, port, topic, new FileInputStream(file));
         
             t.test();

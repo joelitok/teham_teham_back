@@ -55,17 +55,20 @@ public class TaskApi extends Element {
         
         // parsing path param url
         var uriStr = uri.toString();
-        var map = data.toMap();
-        for (var entry : map.entrySet()) {
-            String key = entry.getKey();
-            Object value = entry.getValue();
-            if (value instanceof String) {
-                var keyParam = "{" + key + "}";
-                if (uriStr.contains(keyParam)) {
-                    uriStr = uriStr.replace(keyParam, value.toString());
+        if (data != null) {
+            var map = data.toMap();
+            for (var entry : map.entrySet()) {
+                String key = entry.getKey();
+                Object value = entry.getValue();
+                if (value instanceof String) {
+                    var keyParam = "{" + key + "}";
+                    if (uriStr.contains(keyParam)) {
+                        uriStr = uriStr.replace(keyParam, value.toString());
+                    }
                 }
             }
         }
+        
         
         var requestBuilder = HttpRequest.newBuilder(URI.create(uriStr)).timeout(Duration.ofSeconds(30));
         
@@ -79,8 +82,10 @@ public class TaskApi extends Element {
         HttpRequest request = requestBuilder.build();
         JSONObject json = new JSONObject();
 
+        logger.info("URL: " + request.uri().toString());
         logger.info("Method: " + request.method());
-        logger.info("data: " + data != null ? data.toString() : null);
+        String dataStr = data != null ? data.toString() : "";
+        logger.info("data: " + dataStr);
         try {
             HttpResponse<String> response = HttpClient.newHttpClient().send(request, BodyHandlers.ofString());
             String body = response.body();
