@@ -112,6 +112,7 @@ public final class ProcessExecutor {
         var eventName = event.getName();
         if (listeners.containsKey(eventName)) {
             var ids = listeners.get(eventName);
+            listeners.remove(eventName);
             for (var id: ids) {
                 handle(id, event.getData());
             }
