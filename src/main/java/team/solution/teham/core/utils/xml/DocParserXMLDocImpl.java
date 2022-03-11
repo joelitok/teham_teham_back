@@ -1,6 +1,5 @@
 package team.solution.teham.core.utils.xml;
 
-import org.springframework.http.HttpMethod;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
@@ -13,7 +12,6 @@ import team.solution.teham.core.exceptions.MalFormatedDocumentException;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -116,8 +114,8 @@ public class DocParserXMLDocImpl implements XMLDoc {
                     sources, 
                     targets, 
                     
-                    URI.create(node.getAttribute("uri")),
-                    HttpMethod.resolve(node.getAttribute("method"))
+                    node.getAttribute("uri"),
+                    node.getAttribute("method")
                 );
             } else {    // it is a view task
                 return new TaskView(attrId, attrName, sources, targets);

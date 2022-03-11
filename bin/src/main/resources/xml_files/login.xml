@@ -1,0 +1,26 @@
+<Process id="0">
+    <Event id="1" name="Start event" source="0" target="2" type="Start" />
+    <Connector id="2" name="connector1" source="1" target="3" />
+    <Task id="3" name="login" source="2,19" target="4" type="view" />
+    <Connector id="4" name="connector2" source="3" target="5" />
+    <Event id="5" name="onSubmit" source="4,11" target="6" type="view" />
+    <Connector id="6" name="connector3" source="5" target="7" />
+    <Task id="7" name="post-login" source="6" target="8" type="api" uri="http://localhost:8081/login" method="POST" />
+    <Gateway id="8" name="after-login" cases="401,200" target="9,12" source="7" />
+    
+    <Connector id="9" name="connector4" source="8" target="10" />
+    <Task id="10" name="login?error=1" source="9" target="11" type="view" />
+    <Connector id="11" name="connector5" source="10" target="5" />
+
+    <Connector id="12" name="connector6" source="8" target="13" />
+    <Task id="13" name="get-profil-data" source="12" target="14" type="api" uri="http://localhost:8081/user" method="GET" />
+    <Connector id="14" name="connector7" source="13" target="15" />
+    <Task id="15" name="dashboard" target="16,20" source="14" type="view" />
+
+    <Event id="16" name="onLogout" source="14" target="17" type="view" />
+    <Connector id="17" name="connector8" source="16" target="18" />
+    <Task id="18" name="logout" source="17" target="19" type="api" uri="/logout" method="DELETE" />
+    <Connector id="19" name="connector9" source="18" target="3" />
+
+    <Event id="20" source="15" name="End program" type="End" />
+</Process>

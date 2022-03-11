@@ -17,9 +17,9 @@ import team.solution.teham.core.ProcessExecutor;
 
 public class TaskApi extends Element {
 
-    private URI uri;
+    private String uri;
     
-    private HttpMethod method;
+    private String method;
 
     private Logger logger = Logger.getLogger(this.getClass().getName());
 
@@ -29,12 +29,12 @@ public class TaskApi extends Element {
         String[] source, 
         String[] target,
 
-        URI uri,
-        HttpMethod method
+        String uri,
+        String method
     ) {
         super(id, name, source, target);
         this.uri = uri;
-        this.method = method != null ? method : HttpMethod.GET;
+        this.method = method != null ? method : "GET";
         assertExactTargetCount(1);
     }
 
@@ -44,7 +44,7 @@ public class TaskApi extends Element {
         String[] source, 
         String[] target,
 
-        URI uri
+        String uri
     ) {
         this(id, name, source, target, uri, null);
     }
@@ -54,7 +54,7 @@ public class TaskApi extends Element {
         logger.info("Inside API task");
         
         // parsing path param url
-        var uriStr = uri.toString();
+        var uriStr = uri;
         if (data != null) {
             var map = data.toMap();
             for (var entry : map.entrySet()) {
@@ -69,14 +69,13 @@ public class TaskApi extends Element {
             }
         }
         
-        
         var requestBuilder = HttpRequest.newBuilder(URI.create(uriStr)).timeout(Duration.ofSeconds(30));
         
-        if (data != null && (method == HttpMethod.POST || method == HttpMethod.PUT || method == HttpMethod.PATCH)) {
+        if (data != null && ("POST".equalsIgnoreCase(method) || "PUT".equalsIgnoreCase(method) || "PATCH".equalsIgnoreCase(method))) {
             requestBuilder.headers("Content-Type", "application/json");
-            requestBuilder.method(method.name(), HttpRequest.BodyPublishers.ofString(data.toString()));
+            requestBuilder.method(method, HttpRequest.BodyPublishers.ofString(data.toString()));
         } else {
-            requestBuilder.method(method.name(), HttpRequest.BodyPublishers.noBody());        
+            requestBuilder.method(method, HttpRequest.BodyPublishers.noBody());        
         }
 
         HttpRequest request = requestBuilder.build();
